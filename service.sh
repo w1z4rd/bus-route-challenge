@@ -4,6 +4,8 @@ if [ $# -ne 2 ]; then
   exit 1
 fi
 
+set -o errexit
+
 DATA_FILE=$2
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 RUN="java -jar $DIR/build/libs/bus-route-challenge-0.0.1-SNAPSHOT.jar"
@@ -13,13 +15,13 @@ LOGFILE=/tmp/$NAME.log
 
 checkDataFile() {
   if [ ! -f $DATA_FILE ]; then
-    echo the DATA_FILE does not exist
-    exit 1
+    echo "The DATA_FILE does not exist"
+    return 1
   fi
   local DATA_FILE_TYPE=`file -ib $DATA_FILE`
   if [[ ${DATA_FILE_TYPE:0:11} != "text/plain;" ]]; then
-    echo the DATA_FILE must be text/plain
-    exit 1
+    echo "The DATA_FILE type must be plain text"
+    return 1
   fi
 }
 
@@ -27,7 +29,7 @@ start() {
     checkDataFile
     if [ -f $PIDFILE ]; then
         if kill -0 $(cat $PIDFILE); then
-            echo 'Service already running' >&2
+            echo "Service already running"
             return 1
         else
             rm -f $PIDFILE
@@ -39,7 +41,7 @@ start() {
 
 stop() {
     if [ ! -f $PIDFILE ] || ! kill -0 $(cat $PIDFILE); then
-        echo 'Service not running' >&2
+        echo "Service not running"
         return 1
     fi
     kill -15 $(cat $PIDFILE) && rm -f $PIDFILE
