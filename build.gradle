@@ -3,14 +3,17 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion")
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion"
     }
 }
 
 apply plugin: 'groovy'
+apply plugin: 'findbugs'
 apply plugin: 'java'
 apply plugin: 'jacoco'
 apply plugin: 'org.springframework.boot'
+apply plugin: 'pmd'
+
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -32,7 +35,8 @@ dependencies {
     testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: "$springBootVersion"
     testCompile group: 'junit', name: 'junit', version: "$junitVersion"
     testCompile group: 'org.codehaus.groovy', name: 'groovy', version: "$groovyVersion"
-    testCompile group: 'org.spockframework', name: 'spock-core', version: "$spockFrameworkVersion"
+    testCompile group: 'org.spockframework', name: 'spock-spring', version: "$spockFrameworkVersion"
+    testCompile group: 'cglib', name: 'cglib-nodep', version: "$cglibVersion"
 }
 
 jacocoTestReport {
