@@ -2,11 +2,7 @@ package com.goeuro.challenge.route.bus;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.goeuro.challenge.route.Route;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 
-@EqualsAndHashCode(callSuper = false)
-@ToString
 public class BusRoute extends Route {
 
     public BusRoute() {

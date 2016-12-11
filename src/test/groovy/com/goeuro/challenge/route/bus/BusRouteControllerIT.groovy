@@ -29,6 +29,10 @@ class BusRouteControllerIT extends Specification {
 
     UriTemplate uriTemplate
 
+    def setupSpec() {
+        System.getProperties().setProperty("dataFile", "src/test/resources/example")
+    }
+
     def setup() {
         uriTemplate = new UriTemplate("http://localhost:$localServerPort/api/direct?dep_sid={origin}&arr_sid={destination}")
     }
@@ -42,25 +46,27 @@ class BusRouteControllerIT extends Specification {
         actual.body == new BusRoute(origin, destination, direct)
         where:
         origin | destination | direct
-        1      | 2           | true
-        1      | 3           | false
+        16     | 148         | true
+        140    | 11          | false
     }
 
     @Unroll
-    def "a bad direct route request returns a client error"() {
+    def "a bad origin: #origin or destination: #destination request returns a client error: #errorCode"() {
         when: "a bad direct route request is made"
-        def actual = restTemplate.exchange get(uriTemplate.expand(origin, destination)).build(), BusRoute
+        def actual = restTemplate.exchange get(uriTemplate.expand(origin, destination)).build(), String
         then: "a error code #errorCode is returned"
         actual.statusCode == errorCode
+        actual.body == errorMessage
         where:
-        origin         | destination    | errorCode
-        9999           | 2              | NOT_FOUND
-        3              | 9999           | NOT_FOUND
-        null           | 2              | BAD_REQUEST
-        1              | null           | BAD_REQUEST
-        'a'            | 2              | BAD_REQUEST
-        3              | 'b'            | BAD_REQUEST
-        Long.MAX_VALUE | 2              | BAD_REQUEST
-        3              | Long.MIN_VALUE | BAD_REQUEST
+        origin         | destination    | errorCode   | errorMessage
+        9999           | 16             | NOT_FOUND   | "Station with ID: 9999 not found."
+        11             | 9999           | NOT_FOUND   | "Station with ID: 9999 not found."
+        null           | 148            | BAD_REQUEST | "Failed to convert value of type 'java.lang.String' to required type 'int'; nested exception is java.lang.NumberFormatException: For input string: \"\""
+        140            | null           | BAD_REQUEST | "Failed to convert value of type 'java.lang.String' to required type 'int'; nested exception is java.lang.NumberFormatException: For input string: \"\""
+        'a'            | 19             | BAD_REQUEST | "Failed to convert value of type 'java.lang.String' to required type 'int'; nested exception is java.lang.NumberFormatException: For input string: \"a\""
+        153            | 'b'            | BAD_REQUEST | "Failed to convert value of type 'java.lang.String' to required type 'int'; nested exception is java.lang.NumberFormatException: For input string: \"b\""
+        Long.MAX_VALUE | 114            | BAD_REQUEST | "Failed to convert value of type 'java.lang.String' to required type 'int'; nested exception is java.lang.NumberFormatException: For input string: \"9223372036854775807\""
+        169            | Long.MIN_VALUE | BAD_REQUEST | "Failed to convert value of type 'java.lang.String' to required type 'int'; nested exception is java.lang.NumberFormatException: For input string: \"-9223372036854775808\""
+        11             | 11             | BAD_REQUEST | "Origin: 11 and Destination: 11 must not be the same!"
     }
 }

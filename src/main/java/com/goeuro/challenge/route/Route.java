@@ -1,5 +1,10 @@
 package com.goeuro.challenge.route;
 
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+
+@ToString
+@EqualsAndHashCode
 public abstract class Route {
     protected int origin;
     protected int destination;
@@ -19,13 +24,4 @@ public abstract class Route {
     public abstract int getDestination();
 
     public abstract boolean isDirect();
-
-    @Override
-    public abstract boolean equals(Object that);
-
-    @Override
-    public abstract int hashCode();
-
-    @Override
-    public abstract String toString();
 }
