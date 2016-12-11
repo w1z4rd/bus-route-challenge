@@ -10,6 +10,7 @@ import lombok.ToString;
 public class BusRoute extends Route {
 
     public BusRoute() {
+        super();
     }
 
     public BusRoute(int origin, int destination, boolean direct) {
@@ -19,18 +20,18 @@ public class BusRoute extends Route {
     @Override
     @JsonProperty("dep_sid")
     public int getOrigin() {
-        return origin;
+        return super.origin;
     }
 
     @Override
     @JsonProperty("arr_sid")
     public int getDestination() {
-        return destination;
+        return super.destination;
     }
 
     @Override
     @JsonProperty("direct_bus_route")
     public boolean isDirect() {
-        return direct;
+        return super.direct;
     }
 }

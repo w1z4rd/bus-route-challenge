@@ -5,10 +5,10 @@ public abstract class Route {
     protected int destination;
     protected boolean direct;
 
-    public Route() {
+    protected Route() {
     }
 
-    public Route(int origin, int destination, boolean direct) {
+    protected Route(int origin, int destination, boolean direct) {
         this.origin = origin;
         this.destination = destination;
         this.direct = direct;

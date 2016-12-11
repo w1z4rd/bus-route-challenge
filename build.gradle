@@ -46,3 +46,9 @@ jacocoTestReport {
         html.destination "{$buildDir}/jacocoHtml"
     }
 }
+
+bootRun {
+    if (project.hasProperty('args')) {
+        args project.args.split('\\s+')
+    }
+}
