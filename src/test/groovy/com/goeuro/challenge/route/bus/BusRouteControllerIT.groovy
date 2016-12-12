@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.context.embedded.LocalServerPort
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.web.util.UriTemplate
 import spock.lang.Specification
@@ -15,6 +16,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST
 import static org.springframework.http.HttpStatus.OK
 import static org.springframework.http.RequestEntity.get
 
+@ActiveProfiles("repository-test")
 @ContextConfiguration
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @Subject(BusRouteController)
@@ -27,10 +29,6 @@ class BusRouteControllerIT extends Specification {
     def localServerPort
 
     UriTemplate uriTemplate
-
-    def setupSpec() {
-        System.getProperties().setProperty("dataFile", "src/test/resources/example")
-    }
 
     def setup() {
         uriTemplate = new UriTemplate("http://localhost:$localServerPort/api/direct?dep_sid={origin}&arr_sid={destination}")

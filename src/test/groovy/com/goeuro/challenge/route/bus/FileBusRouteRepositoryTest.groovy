@@ -1,17 +1,23 @@
 package com.goeuro.challenge.route.bus
 
 import org.pcollections.HashTreePMap
-import org.springframework.boot.ApplicationArguments
-import spock.lang.Shared
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.ContextConfiguration
 import spock.lang.Specification
 import spock.lang.Subject
-import spock.lang.Unroll
 
-@Subject(FileBusRouteRepository)
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.NONE
+
+@ActiveProfiles("repository-test")
+@ContextConfiguration
+@SpringBootTest(webEnvironment = NONE)
 class FileBusRouteRepositoryTest extends Specification {
 
-    @Shared
-    ApplicationArguments applicationArguments = Mock(ApplicationArguments)
+    @Subject
+    @Autowired
+    FileBusRouteRepository fileBusRouteRepository
 
     private static Map<Integer, Set<Integer>> expectedRoutes
 
@@ -27,35 +33,11 @@ class FileBusRouteRepositoryTest extends Specification {
                                             169: [5, 114, 153, 11] as Set])
     }
 
-    def setup() {
-        applicationArguments.getSourceArgs() >> ["src/test/resources/example"]
-        System.getProperties().setProperty("dataFile", "src/test/resources/example")
-    }
-
     def "get routes returns a correct routes map"() {
-        given: "a file bus route repository"
-        def fileBusRouteRepository = new FileBusRouteRepository(applicationArguments)
         when: "get routes is called"
         def actual = fileBusRouteRepository.routes()
         then: "a correct routes map is returned"
         actual == expectedRoutes
     }
 
-    @Unroll
-    def "given a #badDataFile data file an #exception is thrown"() {
-        given: "a #badDataFile data file"
-        System.getProperties().setProperty("dataFile", "src/test/resources/$badDataFile")
-        when: "a repository is created"
-        new FileBusRouteRepository(applicationArguments)
-        then: "an #exception is thrown"
-        thrown(exception)
-        where:
-        badDataFile             | exception
-        'missing'               | FileNotFoundException
-        'empty'                 | NoSuchElementException
-        'insufficient_stations' | NoSuchElementException
-        'missing_routes'        | NoSuchElementException
-        'non_number_route'      | NumberFormatException
-        'non_number_station'    | NumberFormatException
-    }
 }

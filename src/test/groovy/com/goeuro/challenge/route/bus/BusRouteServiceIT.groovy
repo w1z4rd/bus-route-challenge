@@ -1,27 +1,23 @@
 package com.goeuro.challenge.route.bus
 
-import org.springframework.boot.ApplicationArguments
-import spock.lang.Shared
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.ContextConfiguration
 import spock.lang.Specification
 import spock.lang.Subject
 import spock.lang.Unroll
 
-class BusRouteServiceIT extends Specification {
-    @Shared
-    ApplicationArguments applicationArguments
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.NONE
 
-    @Shared
-    FileBusRouteRepository routeRepository
+@ActiveProfiles("repository-test")
+@ContextConfiguration
+@SpringBootTest(webEnvironment = NONE)
+class BusRouteServiceIT extends Specification {
 
     @Subject
-    BusRouteService busRouteService = new BusRouteService(routeRepository)
-
-    def setupSpec() {
-        applicationArguments = Mock(ApplicationArguments)
-        applicationArguments.getSourceArgs() >> ["src/test/resources/example"]
-        System.getProperties().setProperty("dataFile", "src/test/resources/example")
-        routeRepository = new FileBusRouteRepository(applicationArguments)
-    }
+    @Autowired
+    BusRouteService busRouteService;
 
     @Unroll
     def "a valid origin #origin and destination #destination on the same route yields a direct route response"() {

@@ -15,6 +15,7 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Repository;
 
+import javax.annotation.PostConstruct;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,9 +31,9 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 @RequiredArgsConstructor(onConstructor = @_(@Autowired))
 public class FileBusRouteRepository implements RouteRepository {
 
-    private final ApplicationArguments applicationArguments;
+    private final ApplicationArguments springApplicationArguments;
 
-    private Map<Integer, Set<Integer>> routesMap = loadRoutes();
+    private Map<Integer, Set<Integer>> routesMap;
 
     @Override
     public Map<Integer, Set<Integer>> routes() {
@@ -40,13 +41,11 @@ public class FileBusRouteRepository implements RouteRepository {
     }
 
     @SneakyThrows
-    private Map<Integer, Set<Integer>> loadRoutes() {
+    @PostConstruct
+    private void loadRoutes() {
         Map<Integer, Set<Integer>> mutableRoutesMap = new HashMap<>();
 
-        //TODO: replace with applicationArguments arg[0]
-        String dataFileStringPath = System.getProperty("dataFile");
-
-        Resource dataResource = new FileSystemResource(dataFileStringPath);
+        Resource dataResource = new FileSystemResource(springApplicationArguments.getNonOptionArgs().get(0));
 
         try (Scanner scanner = new Scanner(dataResource.getInputStream(), UTF_8.name())) {
             int totalNumberOfRoutes = Integer.parseInt(scanner.nextLine());
@@ -69,6 +68,6 @@ public class FileBusRouteRepository implements RouteRepository {
                 });
             }
         }
-        return HashTreePMap.from(mutableRoutesMap);
+        routesMap = HashTreePMap.from(mutableRoutesMap);
     }
 }
