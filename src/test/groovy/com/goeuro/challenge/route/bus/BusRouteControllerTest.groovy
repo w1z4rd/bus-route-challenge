@@ -1,12 +1,13 @@
 package com.goeuro.challenge.route.bus
 
+import com.goeuro.challenge.route.RouteService
 import org.springframework.http.ResponseEntity
 import spock.lang.Specification
 import spock.lang.Subject
 
 class BusRouteControllerTest extends Specification {
 
-    def busRouteService = Mock(BusRouteService)
+    def busRouteService = Mock(RouteService)
     private static def validOrigin = 5
     private static def validDestination = 11
 

@@ -39,5 +39,4 @@ class FileBusRouteRepositoryTest extends Specification {
         then: "a correct routes map is returned"
         actual == expectedRoutes
     }
-
 }
