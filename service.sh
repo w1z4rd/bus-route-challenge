@@ -1,7 +1,13 @@
 #!/bin/bash
-if [ $# -ne 2 ]; then 
-  echo "Usage: $0 {start|stop|block} DATA_FILE"
-  exit 1
+die ( ) {
+    echo
+    echo "$*"
+    echo
+    exit 1
+}
+
+if [ $# -ne 2 ]; then
+  die "Usage: $0 {start|stop|block} DATA_FILE"
 fi
 
 set -o errexit
@@ -15,13 +21,11 @@ LOG_FILE=/tmp/${NAME}.log
 
 checkDataFile() {
   if [ ! -f ${DATA_FILE} ]; then
-    echo "The DATA_FILE does not exist"
-    return 1
+    die "ERROR: The DATA_FILE does not exist"
   fi
   local DATA_FILE_TYPE=`file -ib ${DATA_FILE}`
   if [[ ${DATA_FILE_TYPE:0:11} != "text/plain;" ]]; then
-    echo "The DATA_FILE type must be plain text"
-    return 1
+    die "ERROR: The DATA_FILE type must be plain text"
   fi
 }
 
@@ -29,8 +33,7 @@ start() {
     checkDataFile
     if [ -f ${PID_FILE} ]; then
         if kill -0 $(cat ${PID_FILE}); then
-            echo "Service already running"
-            return 1
+            die "ERROR: Service already running"
         else
             rm -f ${PID_FILE}
         fi
@@ -41,8 +44,7 @@ start() {
 
 stop() {
     if [ ! -f ${PID_FILE} ] || ! kill -0 $(cat ${PID_FILE}); then
-        echo "Service not running"
-        return 1
+        die "ERROR: Service not running"
     fi
     kill -15 $(cat ${PID_FILE}) && rm -f ${PID_FILE}
 }
@@ -59,6 +61,6 @@ case $1 in
         sleep infinity
         ;;
     *)
-        echo "Usage: $0 {start|stop|block} DATA_FILE"
+        die "Usage: $0 {start|stop|block} DATA_FILE"
 esac
 
