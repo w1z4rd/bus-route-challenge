@@ -12,7 +12,6 @@ import spock.lang.Unroll
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 import static org.springframework.http.HttpStatus.BAD_REQUEST
-import static org.springframework.http.HttpStatus.NOT_FOUND
 import static org.springframework.http.HttpStatus.OK
 import static org.springframework.http.RequestEntity.get
 
@@ -59,8 +58,6 @@ class BusRouteControllerIT extends Specification {
         actual.body == errorMessage
         where:
         origin         | destination    | errorCode   | errorMessage
-        9999           | 16             | NOT_FOUND   | "Station with ID: 9999 not found."
-        11             | 9999           | NOT_FOUND   | "Station with ID: 9999 not found."
         null           | 148            | BAD_REQUEST | "Failed to convert value of type 'java.lang.String' to required type 'int'; nested exception is java.lang.NumberFormatException: For input string: \"\""
         140            | null           | BAD_REQUEST | "Failed to convert value of type 'java.lang.String' to required type 'int'; nested exception is java.lang.NumberFormatException: For input string: \"\""
         'a'            | 19             | BAD_REQUEST | "Failed to convert value of type 'java.lang.String' to required type 'int'; nested exception is java.lang.NumberFormatException: For input string: \"a\""

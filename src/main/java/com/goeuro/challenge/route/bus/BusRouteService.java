@@ -20,12 +20,6 @@ public class BusRouteService implements RouteService {
     @Override
     public Route getRoute(int origin, int destination) {
         Map<Integer, Set<Integer>> routes = busRouteRepository.routes();
-        if (!routes.containsKey(origin)) {
-            throw new BusStationNotFoundException(origin);
-        }
-        if (!routes.containsKey(destination)) {
-            throw new BusStationNotFoundException(destination);
-        }
         boolean direct = Optional.ofNullable(routes.get(origin)).map(connections ->
                 connections.contains(destination)
         ).orElse(false);

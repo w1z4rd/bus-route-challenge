@@ -38,16 +38,14 @@ class BusRouteServiceTest extends Specification {
     }
 
     @Unroll
-    def "a missing origin #origin or destination #destination throws a StationNotFoundException"() {
+    def "a missing origin #origin or destination #destination returns a non direct route response"() {
         when: "a get route call is made"
-        busRouteService.getRoute(origin, destination);
-        then: "a BusStationNotFoundException is thrown"
-        def actual = thrown(BusStationNotFoundException)
-        actual.message =~ /Station with ID: $origin|$destination not found./
+        def actual = busRouteService.getRoute(origin, destination);
+        then: "a non direct route is returned"
+        actual == new BusRoute(origin, destination, false)
         where:
         origin | destination
         10     | 2
         1      | 11
     }
 }
-
