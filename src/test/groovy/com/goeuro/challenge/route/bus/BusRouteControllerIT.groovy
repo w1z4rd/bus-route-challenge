@@ -11,6 +11,8 @@ import spock.lang.Specification
 import spock.lang.Subject
 import spock.lang.Unroll
 
+import static com.goeuro.challenge.route.bus.DataFileUtils.CORRECT_DATA
+import static com.goeuro.challenge.route.bus.DataFileUtils.writeDataFile
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 import static org.springframework.http.HttpStatus.BAD_REQUEST
 import static org.springframework.http.HttpStatus.OK
@@ -29,6 +31,10 @@ class BusRouteControllerIT extends Specification {
     def localServerPort
 
     UriTemplate uriTemplate
+
+    def setupSpec() {
+        writeDataFile(CORRECT_DATA)
+    }
 
     def setup() {
         uriTemplate = new UriTemplate("http://localhost:$localServerPort/api/direct?dep_sid={origin}&arr_sid={destination}")

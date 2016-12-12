@@ -8,6 +8,8 @@ import spock.lang.Specification
 import spock.lang.Subject
 import spock.lang.Unroll
 
+import static com.goeuro.challenge.route.bus.DataFileUtils.CORRECT_DATA
+import static com.goeuro.challenge.route.bus.DataFileUtils.writeDataFile
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.NONE
 
 @ActiveProfiles("repository-test")
@@ -18,6 +20,10 @@ class BusRouteServiceIT extends Specification {
     @Subject
     @Autowired
     BusRouteService busRouteService;
+
+    def setupSpec() {
+        writeDataFile(CORRECT_DATA)
+    }
 
     @Unroll
     def "a valid origin #origin and destination #destination on the same route yields a direct route response"() {

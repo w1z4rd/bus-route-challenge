@@ -7,6 +7,8 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Primary
 import org.springframework.context.annotation.Profile
 
+import static com.goeuro.challenge.route.bus.DataFileUtils.DATA_FILE_PATH_NAME
+
 @Configuration
 @Profile("repository-test")
 class BusRouteTestConfiguration {
@@ -14,6 +16,6 @@ class BusRouteTestConfiguration {
     @Bean
     @Primary
     ApplicationArguments springApplicationArguments() {
-        return new DefaultApplicationArguments(["src/test/resources/example"] as String[])
+        return new DefaultApplicationArguments([DATA_FILE_PATH_NAME] as String[])
     }
 }
