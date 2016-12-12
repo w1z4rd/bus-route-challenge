@@ -7,7 +7,13 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import spock.lang.Specification
 import spock.lang.Subject
+import spock.lang.Unroll
 
+import java.nio.file.Files
+import java.nio.file.Paths
+
+import static java.lang.System.lineSeparator
+import static java.nio.charset.StandardCharsets.UTF_8
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.NONE
 
 @ActiveProfiles("repository-test")
@@ -19,24 +25,54 @@ class FileBusRouteRepositoryTest extends Specification {
     @Autowired
     FileBusRouteRepository fileBusRouteRepository
 
-    private static Map<Integer, Set<Integer>> expectedRoutes
+    private static final def EXPECTED_ROUTES = HashTreePMap.from([16 : [148, 140, 19] as Set,
+                                                                  148: [16, 140, 19] as Set,
+                                                                  140: [148, 16, 19] as Set,
+                                                                  19 : [148, 140, 16] as Set,
+                                                                  5  : [114, 153, 11, 169] as Set,
+                                                                  114: [5, 153, 11, 169] as Set,
+                                                                  153: [5, 114, 11, 169] as Set,
+                                                                  11 : [5, 114, 153, 169] as Set,
+                                                                  169: [5, 114, 153, 11] as Set])
 
     def setupSpec() {
-        expectedRoutes = HashTreePMap.from([16 : [148, 140, 19] as Set,
-                                            148: [16, 140, 19] as Set,
-                                            140: [148, 16, 19] as Set,
-                                            19 : [148, 140, 16] as Set,
-                                            5  : [114, 153, 11, 169] as Set,
-                                            114: [5, 153, 11, 169] as Set,
-                                            153: [5, 114, 11, 169] as Set,
-                                            11 : [5, 114, 153, 169] as Set,
-                                            169: [5, 114, 153, 11] as Set])
+        new File("src/test/resources/example").withPrintWriter(UTF_8.name(), {
+            out ->
+                out.print '2' + lineSeparator() +
+                        '1 16 148 140 19' + lineSeparator() +
+                        '2 5 114 153 11 169' + lineSeparator()
+        })
+    }
+
+    def cleanupSpec() {
+        setupSpec()
     }
 
     def "get routes returns a correct routes map"() {
         when: "get routes is called"
         def actual = fileBusRouteRepository.routes()
         then: "a correct routes map is returned"
-        actual == expectedRoutes
+        actual == EXPECTED_ROUTES
+    }
+
+    @Unroll
+    def "given a #badDataFile data file an #exception is thrown"() {
+        given: "a #badDataFile data fle "
+        badDataFile == 'missing' ? Files.delete(Paths.get("src/test/resources/example")) :
+                new File("src/test/resources/example").withPrintWriter(UTF_8.name(), {
+                    out -> out.print data
+                })
+        when: "a the repository loads routes"
+        fileBusRouteRepository.loadRoutes()
+        then: "an #exception is thrown"
+        thrown(exception)
+        where:
+        badDataFile             | exception              | data
+        'missing'               | FileNotFoundException  | ''
+        'empty'                 | NoSuchElementException | ''
+        'insufficient_stations' | NoSuchElementException | '2' + lineSeparator() + '1 2 3' + lineSeparator() + '9 3'
+        'missing_routes'        | NoSuchElementException | '3' + lineSeparator() + '1 2 3' + lineSeparator() + '6 15 20'
+        'non_number_route'      | NumberFormatException  | '2' + lineSeparator() + '1 2 3' + lineSeparator() + 'a 5 7'
+        'non_number_station'    | NumberFormatException  | '2' + lineSeparator() + '1 2 3' + lineSeparator() + '2 x 7'
     }
 }

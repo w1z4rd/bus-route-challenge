@@ -14,6 +14,6 @@ class BusRouteTestConfiguration {
     @Bean
     @Primary
     ApplicationArguments springApplicationArguments() {
-        return new DefaultApplicationArguments(["src/test/resources/example"] as String[]);
+        return new DefaultApplicationArguments(["src/test/resources/example"] as String[])
     }
 }
